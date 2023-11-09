@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./tabulator-master/dist/css/tabulator.min.css">
+    <script src="./tabulator-master/dist/js/tabulator.min.js"></script>
+    <script src="./data.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <style>
+        #table-sub .tabulator-header {
+            border: none;
+            background-color: white;
+            color: white;
+            height: 0;
+        }
+        #table-sub .tabulator-tableholder {
+            border: none;
+            background-color: white;
+            color: white;
+        }
+        #table-sub .tabulator-row, #table-sub .tabulator-cell {
+            border: none;
+            min-height: 0;
+            height: 0 !important;
+            background-color: white;
+            color: white;
+        }
+
+        #table-main .tabulator {
+            overflow: initial !important;
+        }
+        #table-main .tabulator-header {
+            position:sticky;
+            top:15px;
+            position:-webkit-sticky;
+            z-index:100;
+        }
+    </style>
+</head>
+<body>
+    <div>Header 12313123123123</div>
+    <div style="position:sticky;top:-0.95rem;position:-webkit-sticky;z-index:100">
+        <div id="table-sub" style="border:none!important;"></div>
+    </div>
+    <br>
+    <div><div id="table-main" style="overflow: initial !important;"></div></div>
+    <script>
+        //initialize table
+        var table = new Tabulator("#table-main", {
+            data:tabledata, //assign data to table
+            autoColumns:true, //create columns from data field names
+        });
+
+        table.on("scrollHorizontal", function(left, dir) {
+          $(".tabulator-tableholder","#table-sub").scrollLeft(left);
+        });
+
+        //initialize table
+        var table1 = new Tabulator("#table-sub", {
+            data:tabledata, //assign data to table
+            autoColumns:true, //create columns from data field names
+        });
+
+        table1.on("scrollHorizontal", function(left, dir) {
+            $(".tabulator-tableholder","#table-main").scrollLeft(left)
+        });
+
+        table.on("columnResized", function(column){
+            var width = column.getWidth();
+            var fieldName = column.getField();
+
+            var cols = table1.getColumns();
+            cols.forEach(x => {
+                if(x.getField() == fieldName) {
+                    x.setWidth(width);
+                }
+            });
+            table1.redraw();
+        });
+    </script>
+</body>
+</html>
